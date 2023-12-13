@@ -40,17 +40,34 @@ class _TaskWidgetState extends State<TaskWidget> {
     );
   }
 
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.task.name);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: TextField(
-        controller: TextEditingController(text: widget.task.name),
+        controller: _controller,
         decoration: InputDecoration(
           hintText: 'Название задачи',
+          counterText: '${_controller.text.length}/31', // Счетчик символов
         ),
+        maxLength: 31, // Максимальное количество символов
         onChanged: (value) {
           widget.task.name = value;
           widget.onTaskChanged();
+          setState(() {}); // Обновить состояние для отображения счетчика
         },
       ),
       trailing: Wrap(
@@ -100,7 +117,7 @@ class InformationWidget extends StatefulWidget {
 }
 
 class _InformationWidgetState extends State<InformationWidget> {
-  Duration _timerDuration = Duration();
+  Duration _timerDuration = const Duration();
   Timer? _timer;
   List<Task> _tasks = [];
   bool _isTaskRunning = false;
@@ -126,10 +143,10 @@ class _InformationWidgetState extends State<InformationWidget> {
 
   void _startTimer() {
     _stopTimer(); // Остановить текущий таймер, если он активен
-    _timerDuration = Duration(); // Обнулить таймер
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timerDuration = const Duration(); // Обнулить таймер
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        _timerDuration += Duration(seconds: 1);
+        _timerDuration += const Duration(seconds: 1);
       });
     });
   }
@@ -137,7 +154,7 @@ class _InformationWidgetState extends State<InformationWidget> {
   void _stopTimer() {
     _timer?.cancel();
     setState(() {
-      _timerDuration = Duration(); // Обнулить таймер при его остановке
+      _timerDuration = const Duration(); // Обнулить таймер при его остановке
     });
   }
 
@@ -185,7 +202,7 @@ class _InformationWidgetState extends State<InformationWidget> {
               });
             },
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             children: _tasks.map((task) => TaskWidget(
               key: ValueKey(task),
               task: task,
@@ -197,10 +214,10 @@ class _InformationWidgetState extends State<InformationWidget> {
         ),
 
         Padding(
-          padding: EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.only(bottom: 16.0),
           child: ElevatedButton(
               onPressed: _addTask,
-              child: Text('Добавить задачу')
+              child: const Text('Добавить задачу')
           ),
         ),
       ],

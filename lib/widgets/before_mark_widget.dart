@@ -57,26 +57,105 @@ class _BeforeMarkState extends State<BeforeMark> with TickerProviderStateMixin{
       });
     });
   }
-  @override
 
+  void _openSettings() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        List<TextEditingController> controllers = [];
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Настройки задач'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: List<Widget>.generate(controllers.length, (index) {
+                    return Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextField(
+                            controller: controllers[index],
+                            decoration: const InputDecoration(
+                              hintText: 'Название задачи',
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            setState(() {
+                              controllers.removeAt(index);
+                            });
+                          },
+                        ),
+                      ],
+                    );
+                  })
+                    ..add(
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: ElevatedButton(
+                          child: const Text('Добавить задачу'),
+                          onPressed: () {
+                            setState(() {
+                              controllers.add(TextEditingController());
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Сохранить'),
+                  onPressed: () {
+                    // Логика сохранения задач
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (_showMarkAnimation) const CheckAnimationWidget(),
-            if (_showDateTextAndButton) Text(
-              _formattedDate,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0)),
-            if (_showDateTextAndButton) ElevatedButton(
-                onPressed: _toggleMarkAnimation, child: const Text("Отметиться"))
-          ],
-        ),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (_showMarkAnimation) const CheckAnimationWidget(),
+                if (_showDateTextAndButton) Text(
+                    _formattedDate,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0)),
+                if (_showDateTextAndButton) ElevatedButton(
+                    onPressed: _toggleMarkAnimation, child: const Text("Отметиться")),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 10,
+            bottom: 10,
+            child: FloatingActionButton(
+              onPressed: _openSettings,
+              child: const Icon(Icons.settings),
+            ),
+          ),
+        ],
       ),
     );
   }
+
 }
 
 class CheckAnimationWidget extends StatefulWidget {

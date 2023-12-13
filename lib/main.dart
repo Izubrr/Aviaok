@@ -52,7 +52,7 @@ class _HomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         controller: _pageController,
         children: [
           BeforeMark(onHide: () => _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut)),
-          InformationWidget(), // Виджет с текстом "Привет"
+          InformationWidget(),
         ],
       ),
     );
