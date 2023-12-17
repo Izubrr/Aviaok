@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'widgets/before_mark_widget.dart';
 import 'widgets/information_widget.dart';
+import 'widgets/day_summary_widget.dart';
+
+final PageController pageController = PageController();
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Aviaok',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
@@ -31,29 +34,45 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  late PageController _pageController;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
+class _HomePageState extends State<MyHomePage> {
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Вы уверены?'),
+        content: const Text('При закрытии приложения будет сброшен таймер'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Нет'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Да'),
+          ),
+        ],
+      ),
+    )) ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: PageView(
-        physics: const NeverScrollableScrollPhysics(),
-        controller: _pageController,
-        children: [
-          BeforeMark(onHide: () => _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut)),
-          InformationWidget(),
-        ],
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+        ),
+        body: PageView(
+          physics: const NeverScrollableScrollPhysics(),
+          controller: pageController,
+          children: [
+            BeforeMark(),
+            InformationWidget(),
+            DaySummaryWidget(),
+          ],
+        ),
       ),
     );
   }
